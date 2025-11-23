@@ -1,0 +1,227 @@
+/* Header Styles */
+header {
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo img {
+  width: 150px;
+  height: auto;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #666;
+  font-weight: 500;
+  font-size: 14px;
+  transition: color 0.3s;
+  padding: 1em;
+}
+
+nav a:hover {
+  background-color: #2c3e50;
+  border-radius: 8px;
+  color: white;
+}
+
+nav a.active {
+  background-color: #2c3e50;
+  color: white;
+  border-radius: 12px;
+}
+
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.btn-register {
+  background-color: #2c3e50;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.btn-register:hover {
+  background-color: #1a252f;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  background: white;
+}
+
+.search-box #icon-search {
+  color: #888;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.search-box input {
+  padding: 0;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  width: 200px;
+  background: transparent;
+}
+
+/* ===== Nav Dropdown ===== */
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.nav-link.has-caret {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 0;
+  color: #2c3e50;
+  cursor: pointer;
+  font: 600 14px/1 Inter, system-ui, sans-serif;
+  padding: 0;
+  margin: 0;
+}
+.nav-link.has-caret .caret {
+  transition: transform 0.2s ease;
+}
+.nav-dropdown.open .caret {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 120%;
+  left: 0;
+  min-width: 180px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  padding: 8px;
+  display: none;
+  z-index: 1000;
+}
+.nav-dropdown.open .dropdown-menu {
+  display: block;
+}
+.dropdown-menu a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: #334155;
+  text-decoration: none;
+  font: 500 13px/1.2 Inter, system-ui, sans-serif;
+}
+.dropdown-menu a:hover {
+  background: #f1f5f9;
+  color: #111827;
+}
+
+/* Additional styles for dual login buttons */
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-user-login,
+.btn-register {
+  padding: 10px 20px;
+  background: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-user-login:hover,
+.btn-register:hover {
+  background: #34495e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-user-login:active,
+.btn-register:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Icon styling */
+.btn-user-login svg,
+.btn-register svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsive untuk mobile */
+@media (max-width: 768px) {
+  .auth-section {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-user-login,
+  .btn-register {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 20px;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+}

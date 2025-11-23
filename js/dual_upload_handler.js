@@ -1,0 +1,726 @@
+// SINGLETON GUARD - prevent multiple initialization
+if (window._dualUploadHandlerLoaded) {
+  console.warn("dual_upload_handler.js already loaded!");
+} else {
+  window._dualUploadHandlerLoaded = true;
+  // ===== PENGURUS MANAGER CLASS =====
+  class PengurusManager {
+    constructor(suffix = "") {
+      this.suffix = suffix;
+      this.pengurusContainer = document.getElementById(`pengurusContainer${suffix}`);
+      this.addPengurusBtn = document.getElementById(`addPengurusBtnJurnal`);
+      this.pengurusCount = 1;
+
+      if (this.pengurusContainer && this.addPengurusBtn) {
+        this.init();
+      } else {
+        console.warn(`PengurusManager: Elements not found for suffix "${suffix}"`);
+      }
+    }
+
+    init() {
+      this.addPengurusBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.addPengurusField();
+      });
+    }
+
+    addPengurusField() {
+      this.pengurusCount++;
+      const pengurusGroup = document.createElement("div");
+      pengurusGroup.className = "pengurus-input-group";
+      pengurusGroup.dataset.pengurusIndex = this.pengurusCount - 1;
+      pengurusGroup.innerHTML = `
+            <input type="text" class="pengurus-input" placeholder="Nama Pengurus ${this.pengurusCount}">
+            <button type="button" class="btn-remove-pengurus">
+                <i data-feather="x"></i>
+            </button>
+        `;
+
+      this.pengurusContainer.appendChild(pengurusGroup);
+
+      const removeBtn = pengurusGroup.querySelector(".btn-remove-pengurus");
+      removeBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.removePengurusField(pengurusGroup);
+      });
+
+      if (typeof feather !== "undefined") feather.replace();
+      this.updatePlaceholders();
+    }
+
+    removePengurusField(pengurusGroup) {
+      const pengurusGroups = this.pengurusContainer.querySelectorAll(".pengurus-input-group");
+      if (pengurusGroups.length <= 1) {
+        alert("Minimal harus ada 1 pengurus!");
+        return;
+      }
+
+      pengurusGroup.remove();
+      this.pengurusCount--;
+      this.updatePlaceholders();
+    }
+
+    updatePlaceholders() {
+      const pengurusInputs = this.pengurusContainer.querySelectorAll(".pengurus-input");
+      pengurusInputs.forEach((input, index) => {
+        input.placeholder = `Nama Pengurus ${index + 1}`;
+        if (index === 0) input.required = true;
+      });
+
+      const removeButtons = this.pengurusContainer.querySelectorAll(".btn-remove-pengurus");
+      removeButtons.forEach((btn, index) => {
+        btn.style.display = index === 0 && pengurusInputs.length === 1 ? "none" : "flex";
+      });
+    }
+
+    getPengurus() {
+      const pengurusInputs = this.pengurusContainer.querySelectorAll(".pengurus-input");
+      const pengurus = [];
+      pengurusInputs.forEach((input) => {
+        const value = input.value.trim();
+        if (value) pengurus.push(value);
+      });
+      return pengurus;
+    }
+
+    clearPengurus() {
+      const pengurusGroups = this.pengurusContainer.querySelectorAll(".pengurus-input-group");
+      pengurusGroups.forEach((group, index) => {
+        if (index > 0) group.remove();
+      });
+
+      const firstInput = this.pengurusContainer.querySelector(".pengurus-input");
+      if (firstInput) firstInput.value = "";
+      this.pengurusCount = 1;
+      this.updatePlaceholders();
+    }
+  }
+
+  class AuthorsManager {
+    constructor(suffix = "") {
+      this.suffix = suffix;
+      this.authorsContainer = document.getElementById(`authorsContainer${suffix}`);
+      this.addAuthorBtn = document.getElementById(`addAuthorBtn${suffix}`);
+      this.authorCount = 1;
+
+      if (this.authorsContainer && this.addAuthorBtn) {
+        this.init();
+      }
+    }
+
+    init() {
+      this.addAuthorBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.addAuthorField();
+      });
+    }
+
+    addAuthorField() {
+      this.authorCount++;
+      const authorGroup = document.createElement("div");
+      authorGroup.className = "author-input-group";
+      authorGroup.innerHTML = `
+      <input type="text" class="author-input" placeholder="Nama Penulis ${this.authorCount}">
+      <button type="button" class="btn-remove-author">
+        <i data-feather="x"></i>
+      </button>
+    `;
+      this.authorsContainer.appendChild(authorGroup);
+
+      const removeBtn = authorGroup.querySelector(".btn-remove-author");
+      removeBtn.addEventListener("click", () => this.removeAuthorField(authorGroup));
+
+      if (typeof feather !== "undefined") feather.replace();
+    }
+
+    removeAuthorField(authorGroup) {
+      if (this.authorsContainer.querySelectorAll(".author-input-group").length <= 1) {
+        alert("Minimal harus ada 1 penulis!");
+        return;
+      }
+      authorGroup.remove();
+      this.authorCount--;
+    }
+
+    getAuthors() {
+      const inputs = this.authorsContainer.querySelectorAll(".author-input");
+      const authors = [];
+      inputs.forEach((input) => {
+        const value = input.value.trim();
+        if (value) authors.push(value);
+      });
+      return authors;
+    }
+
+    clearAuthors() {
+      const groups = this.authorsContainer.querySelectorAll(".author-input-group");
+      groups.forEach((group, index) => {
+        if (index > 0) group.remove();
+      });
+      const firstInput = this.authorsContainer.querySelector(".author-input");
+      if (firstInput) firstInput.value = "";
+      this.authorCount = 1;
+    }
+  }
+
+  // ===== TAGS MANAGER CLASS (tambah ini kalau belum ada) =====
+  class TagsManager {
+    constructor(suffix = "") {
+      this.suffix = suffix;
+      this.tagsInput = document.getElementById(`tagsInput${suffix}`);
+      this.tags = [];
+    }
+
+    getTags() {
+      if (this.tagsInput) {
+        const value = this.tagsInput.value.trim();
+        return value
+          ? value
+              .split(",")
+              .map((t) => t.trim())
+              .filter((t) => t)
+          : [];
+      }
+      return [];
+    }
+
+    clearTags() {
+      if (this.tagsInput) {
+        this.tagsInput.value = "";
+      }
+    }
+  }
+
+  // ===== DUAL UPLOAD HANDLER - SINGLE DEFINITION ONLY =====
+
+  class DualUploadHandler {
+    constructor() {
+      // SINGLETON PATTERN
+      if (DualUploadHandler._instance) {
+        console.warn("DualUploadHandler already exists, returning existing instance");
+        return DualUploadHandler._instance;
+      }
+      DualUploadHandler._instance = this;
+
+      console.log("DualUploadHandler initialized (Database Mode)");
+
+      this.isSubmittingJurnal = false;
+      this.isSubmittingOpini = false;
+
+      setTimeout(() => {
+        this.initJurnalForm();
+        this.initOpiniForm();
+      }, 100);
+    }
+
+    initJurnalForm() {
+      const form = document.getElementById("uploadFormJurnal");
+      if (!form) {
+        console.error("uploadFormJurnal not found!");
+        return;
+      }
+
+      console.log("Initializing Jurnal form...");
+
+      try {
+        this.jurnalFileManager = new FileUploadManager("Jurnal");
+        this.jurnalCoverManager = new CoverUploadManager("Jurnal");
+        this.jurnalAuthorsManager = new AuthorsManager("Jurnal");
+        this.jurnalPengurusManager = new PengurusManager("Jurnal");
+        this.jurnalTagsManager = new TagsManager("Jurnal");
+
+        // Cek apakah sudah pernah di-bind
+        if (form.dataset.handlerBound === "true") {
+          console.warn("Form sudah ter-bind, skip");
+          return;
+        }
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          await this.handleJurnalSubmit();
+        });
+
+        // Tandai form sudah ter-bind
+        form.dataset.handlerBound = "true";
+
+        console.log("Jurnal form ready");
+      } catch (error) {
+        console.error("Error in initJurnalForm:", error);
+      }
+    }
+
+    async handleJurnalSubmit() {
+      // Cek flag untuk mencegah double submit
+      if (this.isSubmittingJurnal) {
+        console.warn("Submit sedang diproses, mohon tunggu...");
+        return;
+      }
+
+      this.isSubmittingJurnal = true;
+      this.disableSubmitButton("uploadFormJurnal");
+
+      try {
+        // Set flag menjadi true
+        this.isSubmittingJurnal = true;
+
+        if (!window.loginManager || !window.loginManager.isAdmin()) {
+          alert("Login sebagai admin terlebih dahulu!");
+          if (window.loginManager) window.loginManager.openLoginModal();
+          this.isSubmittingJurnal = false; // Reset flag
+          return;
+        }
+
+        if (!this.jurnalFileManager.getUploadedFile()) {
+          alert("Upload file jurnal terlebih dahulu!");
+          this.isSubmittingJurnal = false; // Reset flag
+          return;
+        }
+
+        const authors = this.jurnalAuthorsManager.getAuthors();
+        if (authors.length === 0) {
+          alert("Minimal 1 penulis!");
+          this.isSubmittingJurnal = false; // Reset flag
+          return;
+        }
+
+        const pengurus = this.jurnalPengurusManager.getPengurus();
+        if (pengurus.length === 0) {
+          alert("Minimal 1 pengurus!");
+          this.isSubmittingJurnal = false; // Reset flag
+          return;
+        }
+
+        const judul = document.getElementById("judulJurnal").value.trim();
+        const email = document.getElementById("emailJurnal").value.trim();
+        const kontak = document.getElementById("kontakJurnal").value.trim();
+        const abstrak = document.getElementById("abstrakJurnal").value.trim();
+        const volume = document.getElementById("volumeJurnal").value.trim(); // TAMBAH INI
+
+        if (!judul || !email || !kontak || !abstrak || !volume) {
+          // TAMBAH volume
+          alert("Semua field harus diisi!");
+          this.isSubmittingJurnal = false;
+          return;
+        }
+
+        const phoneRegex = /^(?:(?:\+|00)62|[0])8[1-9]\d{7,11}$/;
+        if (!phoneRegex.test(kontak.replace(/\D/g, ""))) {
+          alert("Nomor kontak harus berupa nomor HP yang valid!\n\nFormat: 08XXXXXXXXX");
+          this.isSubmittingJurnal = false; // Reset flag
+          return;
+        }
+
+        const file = this.jurnalFileManager.getUploadedFile();
+        const confirmMsg = `Yakin mau upload jurnal ini?\n\nJudul: ${judul}\nPenulis: ${authors.join(
+          ", "
+        )}\nPengurus: ${pengurus.join(", ")}\nKontak: ${kontak}\n\nUkuran: ${this.formatFileSize(
+          file.size
+        )}`;
+
+        if (!confirm(confirmMsg)) {
+          console.log("Upload dibatalkan oleh user");
+          this.isSubmittingJurnal = false; // Reset flag
+          return;
+        }
+
+        this.showLoading("Mengupload jurnal ke server...");
+
+        // Upload PDF
+        const fileFormData = new FormData();
+        fileFormData.append("file", file);
+
+        const fileUploadResponse = await fetch("/ksmaja/api/upload.php", {
+          method: "POST",
+          body: fileFormData,
+        });
+
+        const fileResult = await fileUploadResponse.json();
+
+        if (!fileResult.ok) {
+          throw new Error(fileResult.message || "Upload file gagal");
+        }
+
+        console.log("File uploaded:", fileResult.url);
+
+        // Upload cover
+        let coverUrl = null;
+        const coverFile = this.jurnalCoverManager.getCoverFile();
+
+        if (coverFile) {
+          this.updateLoadingMessage("Mengupload cover image...");
+
+          const coverFormData = new FormData();
+          coverFormData.append("file", coverFile);
+
+          const coverUploadResponse = await fetch("/ksmaja/api/upload.php", {
+            method: "POST",
+            body: coverFormData,
+          });
+
+          const coverResult = await coverUploadResponse.json();
+          if (coverResult.ok) {
+            coverUrl = coverResult.url;
+            console.log("Cover uploaded:", coverUrl);
+          }
+        }
+
+        // Create journal
+        this.updateLoadingMessage("Menyimpan metadata ke database...");
+
+        const metadata = {
+          title: judul,
+          abstract: abstrak,
+          authors: authors,
+          tags: this.jurnalTagsManager.getTags(),
+          fileUrl: fileResult.url,
+          coverUrl: coverUrl,
+          email: email,
+          contact: kontak,
+          pengurus: pengurus,
+          volume: volume, // TAMBAH INI
+          client_temp_id: "upload_" + Date.now(),
+          client_updated_at: this.toMySQLDateTime(new Date()),
+        };
+
+        console.log("Sending metadata:", metadata);
+
+        const createResponse = await fetch("/ksmaja/api/create_journal.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(metadata),
+        });
+
+        const createResult = await createResponse.json();
+
+        if (!createResult.ok) {
+          throw new Error(createResult.message || "Gagal menyimpan metadata");
+        }
+
+        console.log("Journal created with ID:", createResult.id);
+
+        this.hideLoading();
+        alert("Jurnal berhasil diupload ke database!");
+
+        window.dispatchEvent(
+          new CustomEvent("journals:changed", {
+            detail: { id: createResult.id, action: "created" },
+          })
+        );
+
+        this.resetJurnalForm();
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } catch (error) {
+        console.error("Upload error:", error);
+        this.hideLoading();
+        alert("Gagal upload: " + error.message);
+      } finally {
+        // Selalu reset flag setelah proses selesai
+        this.isSubmittingJurnal = false;
+        this.enableSubmitButton("uploadFormJurnal");
+      }
+    }
+
+    initOpiniForm() {
+      const form = document.getElementById("uploadFormOpini");
+      if (!form) {
+        console.error("uploadFormOpini not found!");
+        return;
+      }
+
+      console.log("Initializing Opini form...");
+
+      try {
+        this.opiniFileManager = new FileUploadManager("Opini");
+        this.opiniCoverManager = new CoverUploadManager("Opini");
+        this.opiniAuthorsManager = new AuthorsManager("Opini");
+        this.opiniTagsManager = new TagsManager("Opini");
+
+        // Cek apakah sudah pernah di-bind
+        if (form.dataset.handlerBound === "true") {
+          console.warn("Form sudah ter-bind, skip");
+          return;
+        }
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          await this.handleOpiniSubmit();
+        });
+
+        // Tandai form sudah ter-bind
+        form.dataset.handlerBound = "true";
+
+        console.log("Opini form ready");
+      } catch (error) {
+        console.error("Error in initOpiniForm:", error);
+      }
+    }
+
+    async handleOpiniSubmit() {
+      // Cek flag untuk mencegah double submit
+      if (this.isSubmittingOpini) {
+        console.warn("Submit sedang diproses, mohon tunggu...");
+        return;
+      }
+
+      try {
+        // Set flag menjadi true
+        this.isSubmittingOpini = true;
+
+        if (!window.loginManager || !window.loginManager.isAdmin()) {
+          alert("Login sebagai admin terlebih dahulu!");
+          if (window.loginManager) window.loginManager.openLoginModal();
+          this.isSubmittingOpini = false; // Reset flag
+          return;
+        }
+
+        if (!this.opiniFileManager.getUploadedFile()) {
+          alert("Upload file opini terlebih dahulu!");
+          this.isSubmittingOpini = false; // Reset flag
+          return;
+        }
+
+        const authors = this.opiniAuthorsManager.getAuthors();
+        if (authors.length === 0) {
+          alert("Minimal 1 penulis!");
+          this.isSubmittingOpini = false; // Reset flag
+          return;
+        }
+
+        const judul = document.getElementById("judulOpini").value.trim();
+        const email = document.getElementById("emailOpini").value.trim();
+        const kontak = document.getElementById("kontakOpini").value.trim();
+        const abstrak = document.getElementById("abstrakOpini").value.trim();
+
+        if (!judul || !email || !kontak || !abstrak) {
+          alert("Semua field harus diisi!");
+          this.isSubmittingOpini = false; // Reset flag
+          return;
+        }
+
+        const phoneRegex = /^(?:(?:\+|00)62|[0])8[1-9]\d{7,11}$/;
+        if (!phoneRegex.test(kontak.replace(/\D/g, ""))) {
+          alert("Nomor kontak harus berupa nomor HP yang valid!\n\nFormat: 08XXXXXXXXX");
+          this.isSubmittingOpini = false; // Reset flag
+          return;
+        }
+
+        const file = this.opiniFileManager.getUploadedFile();
+        const confirmMsg = `Yakin mau upload opini ini?\n\nJudul: ${judul}\nPenulis: ${authors.join(
+          ", "
+        )}\nKontak: ${kontak}\n\nUkuran: ${this.formatFileSize(file.size)}`;
+
+        if (!confirm(confirmMsg)) {
+          console.log("Upload dibatalkan");
+          this.isSubmittingOpini = false; // Reset flag
+          return;
+        }
+
+        this.showLoading("Mengupload opini ke server...");
+
+        // Upload file
+        const fileFormData = new FormData();
+        fileFormData.append("file", file);
+
+        const fileUploadResponse = await fetch("/ksmaja/api/upload.php", {
+          method: "POST",
+          body: fileFormData,
+        });
+
+        const fileResult = await fileUploadResponse.json();
+
+        if (!fileResult.ok) {
+          throw new Error(fileResult.message || "Upload file gagal");
+        }
+
+        console.log("File uploaded:", fileResult.url);
+
+        // Upload cover
+        let coverUrl = null;
+        const coverFile = this.opiniCoverManager.getCoverFile();
+
+        if (coverFile) {
+          const coverFormData = new FormData();
+          coverFormData.append("file", coverFile);
+
+          const coverUploadResponse = await fetch("/ksmaja/api/upload.php", {
+            method: "POST",
+            body: coverFormData,
+          });
+
+          const coverResult = await coverUploadResponse.json();
+          if (coverResult.ok) {
+            coverUrl = coverResult.url;
+            console.log("Cover uploaded:", coverUrl);
+          }
+        }
+
+        // Create opinion
+        const metadata = {
+          title: judul,
+          description: abstrak,
+          category: "opini",
+          author_name: authors.join(", "),
+          fileUrl: fileResult.url,
+          coverUrl: coverUrl,
+          client_updated_at: this.toMySQLDateTime(new Date()),
+        };
+
+        const createResponse = await fetch("/ksmaja/api/create_opinion.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(metadata),
+        });
+
+        const createResult = await createResponse.json();
+
+        if (!createResult.ok) {
+          throw new Error(createResult.message || "Gagal menyimpan metadata");
+        }
+
+        console.log("Opinion created with ID:", createResult.id);
+
+        this.hideLoading();
+        alert("Artikel Opini berhasil diupload!");
+
+        window.dispatchEvent(
+          new CustomEvent("opinions:changed", {
+            detail: { id: createResult.id, action: "created" },
+          })
+        );
+
+        this.resetOpiniForm();
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } catch (error) {
+        console.error("Upload error:", error);
+        this.hideLoading();
+        alert("Gagal upload: " + error.message);
+      } finally {
+        // Selalu reset flag setelah proses selesai
+        this.isSubmittingOpini = false;
+      }
+    }
+
+    // Method lainnya tetap sama...
+    toMySQLDateTime(date) {
+      const d = date instanceof Date ? date : new Date(date);
+
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      const hours = String(d.getHours()).padStart(2, "0");
+      const minutes = String(d.getMinutes()).padStart(2, "0");
+      const seconds = String(d.getSeconds()).padStart(2, "0");
+
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+
+    formatFileSize(bytes) {
+      if (bytes === 0) return "0 Bytes";
+      const k = 1024;
+      const sizes = ["Bytes", "KB", "MB", "GB"];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+    }
+
+    showLoading(message) {
+      let overlay = document.getElementById("uploadLoadingOverlay");
+      if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.id = "uploadLoadingOverlay";
+        overlay.innerHTML = `
+        <div class="loading-spinner"></div>
+        <p class="loading-message">${message}</p>
+      `;
+        overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); display: flex; flex-direction: column;
+        justify-content: center; align-items: center; z-index: 9999; color: white;
+      `;
+
+        const style = document.createElement("style");
+        style.textContent = `
+        .loading-spinner {
+          width: 60px; height: 60px;
+          border: 4px solid rgba(255,255,255,0.3);
+          border-top: 4px solid white;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `;
+        document.head.appendChild(style);
+        document.body.appendChild(overlay);
+      } else {
+        overlay.querySelector(".loading-message").textContent = message;
+        overlay.style.display = "flex";
+      }
+    }
+
+    updateLoadingMessage(message) {
+      const overlay = document.getElementById("uploadLoadingOverlay");
+      if (overlay) {
+        overlay.querySelector(".loading-message").textContent = message;
+      }
+    }
+
+    hideLoading() {
+      const overlay = document.getElementById("uploadLoadingOverlay");
+      if (overlay) {
+        overlay.style.display = "none";
+      }
+    }
+
+    resetJurnalForm() {
+      document.getElementById("uploadFormJurnal").reset();
+      this.jurnalFileManager.removeFile();
+      this.jurnalCoverManager.removeCover();
+      this.jurnalAuthorsManager.clearAuthors();
+      this.jurnalPengurusManager.clearPengurus();
+      this.jurnalTagsManager.clearTags();
+    }
+
+    resetOpiniForm() {
+      document.getElementById("uploadFormOpini").reset();
+      this.opiniFileManager.removeFile();
+      this.opiniCoverManager.removeCover();
+      this.opiniAuthorsManager.clearAuthors();
+      this.opiniTagsManager.clearTags();
+    }
+
+    disableSubmitButton(formId) {
+      const submitBtn = document.querySelector(`#${formId} button[type="submit"]`);
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.dataset.originalText = submitBtn.textContent;
+        submitBtn.textContent = "Sedang memproses...";
+      }
+    }
+
+    enableSubmitButton(formId) {
+      const submitBtn = document.querySelector(`#${formId} button[type="submit"]`);
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = submitBtn.dataset.originalText || "SUBMIT";
+      }
+    }
+  }
+
+  // Initialize on page load
+  document.addEventListener("DOMContentLoaded", () => {
+    window.dualUploadHandler = new DualUploadHandler();
+    console.log("DualUploadHandler ready (Database Mode)");
+  });
+}
+
+console.log("dual_upload_handler.js loaded");

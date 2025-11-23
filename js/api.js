@@ -1,0 +1,263 @@
+// js/api.js
+// API wrapper functions untuk komunikasi dengan backend
+
+// Set base API URL
+window.API_BASE = window.API_BASE || "/ksmaja/api";
+
+// ===== FILE UPLOAD =====
+async function uploadFileToServer(file, onProgress) {
+  const endpoint = window.API_BASE + "/upload.php";
+  const form = new FormData();
+  form.append("file", file);
+
+  try {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", endpoint, true);
+
+    // Progress tracking
+    if (typeof onProgress === "function") {
+      xhr.upload.onprogress = function (e) {
+        if (e.lengthComputable) {
+          const percent = Math.round((e.loaded / e.total) * 100);
+          try {
+            onProgress(percent, e.loaded, e.total);
+          } catch (err) {
+            console.warn("Progress callback error:", err);
+          }
+        }
+      };
+    }
+
+    // Promise wrapper untuk XMLHttpRequest
+    const res = await new Promise((resolve, reject) => {
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState !== 4) return;
+
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            resolve(JSON.parse(xhr.responseText));
+          } catch (err) {
+            reject(new Error("Invalid JSON response"));
+          }
+        } else {
+          reject(new Error("Upload failed: " + xhr.statusText));
+        }
+      };
+
+      xhr.onerror = () => reject(new Error("Network error during upload"));
+      xhr.send(form);
+    });
+
+    if (res && res.ok) {
+      return { ok: true, url: res.url || null, id: res.id || null };
+    }
+    return { ok: false, message: res.message || "Upload returned ok=false" };
+  } catch (err) {
+    console.error("Upload error:", err);
+    return { ok: false, message: err.message || "Upload error" };
+  }
+}
+
+// ===== JOURNAL API =====
+async function createJournal(metadata) {
+  const endpoint = window.API_BASE + "/create_journal.php";
+  try {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify(metadata),
+    });
+    return await res.json();
+  } catch (err) {
+    console.error("Create journal error:", err);
+    return { ok: false, message: err.message };
+  }
+}
+
+async function listJournals(limit = 50, offset = 0) {
+  const endpoint = `${window.API_BASE}/list_journals.php?limit=${encodeURIComponent(
+    limit
+  )}&offset=${encodeURIComponent(offset)}`;
+  try {
+    const res = await fetch(endpoint);
+    return await res.json();
+  } catch (err) {
+    console.error("List journals error:", err);
+    return { ok: false, message: err.message };
+  }
+}
+
+async function getJournal(id) {
+  const endpoint = `${window.API_BASE}/get_journal.php?id=${encodeURIComponent(id)}`;
+  try {
+    const res = await fetch(endpoint);
+    return await res.json();
+  } catch (err) {
+    console.error("Get journal error:", err);
+    return { ok: false, message: err.message };
+  }
+}
+
+async function updateJournal(payload) {
+  const endpoint = window.API_BASE + "/update_journal.php";
+  try {
+    const res = await fetch(endpoint, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      credentials: "same-origin",
+    });
+    return await res.json();
+  } catch (err) {
+    console.error("Update journal error:", err);
+    return { ok: false, message: err.message };
+  }
+}
+
+async function deleteJournal(id) {
+  const endpoint = window.API_BASE + "/delete_journal.php";
+  try {
+    const res = await fetch(endpoint, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+      credentials: "same-origin",
+    });
+    return await res.json();
+  } catch (err) {
+    console.error("Delete journal error:", err);
+    return { ok: false, message: err.message };
+  }
+}
+
+// ===== OPINION API =====
+async function listOpinions(limit = 50, offset = 0) {
+  // FIX: endpoint yang benar adalah list_opinion.php (singular)
+  const endpoint = `${window.API_BASE}/list_opinion.php?limit=${encodeURIComponent(
+    limit
+  )}&offset=${encodeURIComponent(offset)}`;
+  try {
+    const res = await fetch(endpoint);
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("List opinions error:", err);
+    return { ok: false, message: err.message };
+  }
+}
+
+async function createOpinion(opinion) {
+  const endpoint = window.API_BASE + "/create_opinion.php";
+  try {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify(opinion),
+    });
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Create opinion error:", err);
+    return { ok: false, message: err.message };
+  }
+}
+
+async function getOpinion(id) {
+  const endpoint = `${window.API_BASE}/get_opinion.php?id=${encodeURIComponent(id)}`;
+  try {
+    const res = await fetch(endpoint);
+    return await res.json();
+  } catch (err) {
+    console.error("Get opinion error:", err);
+    return { ok: false, message: err.message };
+  }
+}
+
+async function deleteOpinion(id) {
+  // FIX: gunakan query parameter atau JSON body, bukan URLSearchParams
+  const endpoint = `${window.API_BASE}/delete_opinion.php?id=${encodeURIComponent(id)}`;
+  try {
+    const res = await fetch(endpoint, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+    });
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("Delete opinion error:", err);
+    return { ok: false, message: err.message };
+  }
+}
+
+// ===== SYNC API =====
+async function syncPush(changes) {
+  const endpoint = window.API_BASE + "/sync_push.php";
+  try {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ changes }),
+      credentials: "same-origin",
+    });
+    return await res.json();
+  } catch (err) {
+    console.error("Sync push error:", err);
+    return { ok: false, message: err.message };
+  }
+}
+
+async function syncPull(since) {
+  const endpoint =
+    window.API_BASE + "/sync_pull.php" + (since ? `?since=${encodeURIComponent(since)}` : "");
+  try {
+    const res = await fetch(endpoint);
+    return await res.json();
+  } catch (err) {
+    console.error("Sync pull error:", err);
+    return { ok: false, message: err.message };
+  }
+}
+
+// ===== UPDATE VIEWS =====
+async function updateViews(id, type) {
+  const endpoint = window.API_BASE + "/update_views.php";
+  try {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ id, type }),
+    });
+    return await res.json();
+  } catch (err) {
+    console.error("Update views error:", err);
+    return { ok: false, message: err.message };
+  }
+}
+
+// ===== EXPOSE GLOBALLY =====
+// Journals
+window.uploadFileToServer = uploadFileToServer;
+window.createJournal = createJournal;
+window.listJournals = listJournals;
+window.getJournal = getJournal;
+window.updateJournal = updateJournal;
+window.deleteJournal = deleteJournal;
+
+// Opinions
+window.listOpinions = listOpinions;
+window.createOpinion = createOpinion;
+window.getOpinion = getOpinion;
+window.deleteOpinion = deleteOpinion;
+
+// Sync
+window.syncPush = syncPush;
+window.syncPull = syncPull;
+
+// Views
+window.updateViews = updateViews;
+
+console.log("API module loaded successfully");
