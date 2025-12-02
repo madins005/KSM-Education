@@ -13,12 +13,19 @@
     <script src="https://unpkg.com/feather-icons"></script>
   </head>
   <body>
-    <!-- Header -->
     <header>
       <div class="header-container">
         <div class="logo">
           <a href="#"><img src="./assets/main_logo.png" alt="Logo" /></a>
         </div>
+
+        <!-- Hamburger Button (Mobile Only) -->
+        <button class="hamburger-menu" aria-label="Toggle menu" aria-expanded="false" type="button">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
         <nav class="active">
           <a href="#">HOME</a>
 
@@ -700,6 +707,43 @@
       </div>
     </div>
 
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal">
+      <div class="modal-overlay"></div>
+      <div class="modal-content" style="max-width: 400px">
+        <button type="button" class="close-modal" onclick="closeShareModal()">
+          <i data-feather="x"></i>
+        </button>
+
+        <h2 style="margin-bottom: 20px">Bagikan Jurnal</h2>
+
+        <div style="display: flex; flex-direction: column; gap: 12px">
+          <input
+            type="text"
+            id="shareUrlInput"
+            readonly
+            style="padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px"
+          />
+
+          <button onclick="copyShareLink()" class="share-btn copy">
+            <i data-feather="copy"></i> Copy Link
+          </button>
+
+          <button onclick="shareToWhatsApp()" class="share-btn wa">
+            <i data-feather="message-circle"></i> Share ke WhatsApp
+          </button>
+
+          <button onclick="shareToFacebook()" class="share-btn fb">
+            <i data-feather="facebook"></i> Share ke Facebook
+          </button>
+
+          <button onclick="shareToTwitter()" class="share-btn x">
+            <i data-feather="x"></i> Share ke X
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== CORRECT SCRIPT LOADING ORDER ===== -->
 
     <!-- 1. Core API & Storage FIRST -->
@@ -725,6 +769,7 @@
     <!-- THIRD -->
     <script src="./js/upload_tabs.js"></script>
     <!-- FOURTH -->
+    <script src="./js/social.js"></script>
 
     <!-- 5. UI & Navigation (SCRIPT.JS HARUS DI AKHIR) -->
     <script src="./js/script.js?v=2025112910"></script>

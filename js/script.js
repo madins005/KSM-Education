@@ -759,6 +759,40 @@ class EditJournalManager {
   }
 }
 
+// function setupNavDropdown() {
+//   const dropdowns = document.querySelectorAll(".nav-dropdown");
+//   console.log("Found dropdowns:", dropdowns.length);
+
+//   dropdowns.forEach((dd) => {
+//     const btn = dd.querySelector(".nav-link.has-caret");
+//     const menu = dd.querySelector(".dropdown-menu");
+//     if (!btn || !menu) return;
+
+//     btn.addEventListener("click", (e) => {
+//       console.log("Nav dropdown clicked");
+//       e.preventDefault();
+//       e.stopPropagation();
+
+//       // cek class sebelum
+//       console.log("before:", dd.className);
+
+//       if (dd.classList.contains("open")) {
+//         dd.classList.remove("open");
+//       } else {
+//         dd.classList.add("open");
+//       }
+
+//       // cek class sesudah
+//       console.log("after:", dd.className);
+//     });
+//   });
+
+//   // sementara: matikan auto-close global dulu
+//   // document.addEventListener("click", () => {
+//   //   dropdowns.forEach((dd) => dd.classList.remove("open"));
+//   // });
+// }
+
 // ===== LOGIN STATUS SYNC =====
 function syncLoginStatusUI() {
   const isLoggedIn = sessionStorage.getItem("userLoggedIn") === "true";
@@ -787,18 +821,15 @@ window.addEventListener("adminLoginStatusChanged", syncLoginStatusUI);
 
 // ===== INITIALIZE ALL SYSTEMS =====
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM ready, init start");
+
   // ===== CLEAR OLD LOCALSTORAGE =====
   localStorage.removeItem("journals");
   localStorage.removeItem("opinions");
 
-  // INITIALIZE UNIFIED DROPDOWN MANAGER FIRST
-  if (typeof UnifiedDropdownManager !== "undefined") {
-    if (!window.unifiedDropdownManager) {
-      window.unifiedDropdownManager = new UnifiedDropdownManager();
-    }
-  } else {
-    console.warn("UnifiedDropdownManager not loaded. Include dropdown-manager.js first!");
-  }
+  // console.log("Before setupNavDropdown");
+  // setupNavDropdown();
+  // console.log("After setupNavDropdown");
 
   setupHashSearch();
 

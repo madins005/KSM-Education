@@ -278,6 +278,14 @@ class JournalManager {
               )}')" style="flex:1; padding: 8px; border:none; background:#e74c3c; color:white; border-radius:4px; cursor:pointer; display:flex !important; align-items:center; justify-content:center; gap:5px;">
               <i data-feather="trash-2" style="width:14px; height:14px;"></i> Hapus
             </button>
+            <button
+              class="btn-share"
+              onclick="event.stopPropagation(); openShareModal('${journal.id}')"
+              style="flex:1; padding: 8px; border:none; background:#27ae60; color:white; border-radius:4px; cursor:pointer; display:flex !important; align-items:center; justify-content:center; gap:5px;"
+            >
+              <i data-feather="share-2" style="width:14px; height:14px;"></i> Share
+            </button>
+
           </div>
         `
             : ""

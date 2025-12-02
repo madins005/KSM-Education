@@ -1,5 +1,4 @@
 // ===== DASHBOARD USER - DATABASE MIGRATION VERSION =====
-// Pure user functions only - dropdowns handled by script.js
 
 feather.replace();
 
