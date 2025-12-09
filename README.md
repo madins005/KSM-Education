@@ -45,6 +45,3 @@ Web-based application for managing academic journals and opinion articles for ed
 - MySQL
 - Apache web server
 - PDO MySQL extension
-
-## Installation
-1. Clone repository
