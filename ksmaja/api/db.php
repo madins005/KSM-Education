@@ -1,7 +1,6 @@
 <?php
 // db.php
 
-// 1. Konfigurasi Header HTTP
 // Set header agar browser mengenali output sebagai JSON dengan encoding UTF-8
 header('Content-Type: application/json; charset=utf-8');
 
@@ -9,7 +8,6 @@ header('Content-Type: application/json; charset=utf-8');
 // header('Access-Control-Allow-Origin: http://localhost:3000');
 // header('Access-Control-Allow-Credentials: true');
 
-// 2. Konfigurasi Kredensial Database
 // Definisi konstanta dan variabel untuk koneksi database
 define('DB_PORT', '3306');
 define('DB_NAME', 'journal_system2');
@@ -19,7 +17,6 @@ $DB_NAME = 'journal_system2';
 $DB_USER = 'root';
 $DB_PASS = '';
 
-// 3. Inisialisasi Koneksi PDO
 try {
     // Buat instance PDO baru untuk menghubungkan PHP ke MySQL
     $pdo = new PDO("mysql:host={$DB_HOST};dbname={$DB_NAME};charset=utf8mb4", $DB_USER, $DB_PASS, [
